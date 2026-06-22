@@ -1,10 +1,20 @@
 import React from 'react'
+import { useState, useEffect } from 'react';
 
-const Searchingbar = () => {
+const Searchingbar = ({onSearch}) => {
+
+  const [searchval,setsearchval]=  useState("")
+
+  useEffect(()=>{
+    const timer = setTimeout(()=>{
+      onSearch(searchval)
+    },500);
+    return  ()=> clearTimeout(timer)
+  },[searchval])
+
   return (
-    <div>
-      
-    </div>
+   <input type="text" value={searchval} onChange={setsearchval(e.target.value)}
+   placeholder = "Search here..." className="border border-gray-300 rounded px-3 py-2 w-full"/>
   )
 }
 

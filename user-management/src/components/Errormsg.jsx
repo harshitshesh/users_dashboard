@@ -1,8 +1,11 @@
 import React from 'react'
 
-const Errormsg = () => {
+const Errormsg = ({msg,onDismiss}) => {
+  if (!msg) return null;
   return (
-    <div>
+    <div className='bg-red-100 border border-red-400 text-red-700  px-4 py-3 rounded relative mb-4'>
+      <span>{msg}</span>
+      <button onClick={onDismiss} className="absolute top-2 right-2 text-red-700 font-bold text-lg">&times;</button>"
       
     </div>
   )
