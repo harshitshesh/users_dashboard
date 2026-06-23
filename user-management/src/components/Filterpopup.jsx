@@ -18,7 +18,7 @@ const Filterpopup = ({ onApply, onClear, activeFilterCount, Filters }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setlocafilter((prv) => ({
+    setlocalfilter((prv) => ({
       ...prv,
       [name]: value
     }))
@@ -35,7 +35,7 @@ const Filterpopup = ({ onApply, onClear, activeFilterCount, Filters }) => {
     setisopen(false)
   }
 
-  useeffect(() => {
+  useEffect(() => {
     setlocalfilter(Filters)
   }, [Filters])
 

@@ -23,7 +23,7 @@ const useUsers = () => {
 
 const handleAdduser = async (userdata) => {
     setloading(true);
-    seerror(null);
+    seterror(null);
     try {
         const newuser = await addUser(userdata)
         setusers(prv => [...prv, { ...userdata, id: newuser.id }])
@@ -42,7 +42,7 @@ const handleUpdateuser = async (id, updatedata) => {
         const updateduser = await updateUser(id, updatedata)
         setusers(prv => prv.map(user => user.id == id ? { ...user, ...updatedata } : user))
     } catch (err) {
-        seterror(err.message); k
+        seterror(err.message); 
 
     } finally {
         setloading(false);

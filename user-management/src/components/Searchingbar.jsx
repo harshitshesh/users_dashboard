@@ -13,7 +13,7 @@ const Searchingbar = ({onSearch}) => {
   },[searchval])
 
   return (
-   <input type="text" value={searchval} onChange={setsearchval(e.target.value)}
+   <input type="text" value={searchval} onChange={(e)=> setsearchval(e.target.value)}
    placeholder = "Search here..." className="border border-gray-300 rounded px-3 py-2 w-full"/>
   )
 }

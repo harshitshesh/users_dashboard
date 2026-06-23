@@ -3,6 +3,16 @@ const BASE_URL = "https://jsonplaceholder.typicode.com";
 
 
 
+const transformUser = (user) => {
+  const [firstName = "", ...rest] = user.name.split(" ");
+  return {
+    id: user.id,
+    firstName,
+    lastName: rest.join(" "),
+    email: user.email,
+    department: user.company?.name || "N/A",
+  };
+};
 
 export const getUsers = async () => {
     const response = await fetch(`${BASE_URL}/users`)
@@ -10,7 +20,7 @@ export const getUsers = async () => {
     if (!response.ok) throw new Error("Failed to fetch users")
 
     const data = await response.json()
-    return data;
+    return data.map(transformUser);
 }
 
 export const addUser = async (userdata) => {
