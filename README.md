@@ -19,7 +19,7 @@ A simple web application to view, add, edit, and delete users using the JSONPlac
 git clone https://github.com/your-username/user-management-dashboard.git
 
 # 2. Go into the project folder
-cd user-management-dashboard
+cd user-management
 
 # 3. Install dependencies
 npm install
