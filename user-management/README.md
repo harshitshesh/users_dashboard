@@ -1,16 +1,70 @@
-# React + Vite
+# User Management Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple web application to view, add, edit, and delete users using the JSONPlaceholder API.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+- React + Vite
+- Tailwind CSS v4
+- JSONPlaceholder API
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Setup & Run
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+# 1. Clone the repo
+git clone https://github.com/your-username/user-management-dashboard.git
+
+# 2. Go into the project folder
+cd user-management
+
+# 3. Install dependencies
+npm install
+
+# 4. Start the development server
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser.
+
+---
+
+## Features
+
+- View all users fetched from `/users` endpoint
+- Add a new user (simulated via POST)
+- Edit an existing user (simulated via PUT)
+- Delete a user (simulated via DELETE)
+- Search across all fields
+- Filter by first name, last name, email, and department
+- Sort by any column
+- Pagination with 10, 25, 50, 100 rows per page
+- Form validation with error messages
+- API error handling with error display
+- Fully responsive UI
+
+---
+
+## Assumptions
+
+- JSONPlaceholder does not persist data — add/edit/delete are simulated and reflected only in local state
+- `name` field from API is split into `firstName` and `lastName` using the first space
+- `company.name` from API is used as the `department` field
+- Department field is free-text input since API has no department list
+
+---
+
+## Challenges & Improvements
+
+**Challenges faced:**
+- JSONPlaceholder returns `name` as a single string and has no `department` field — handled via a `transformUser` function in the service layer
+- Keeping search, filter, and pagination in sync required careful state management
+
+**Improvements with more time:**
+- Add a real backend with persistent data
+- Add unit tests for hooks and components
+- Add dark mode support
+- Implement infinite scrolling as an alternative to pagination
