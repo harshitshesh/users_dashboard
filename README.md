@@ -2,6 +2,8 @@
 
 A simple web application to view, add, edit, and delete users using the JSONPlaceholder API.
 
+live link - https://benevolent-vacherin-4e24ff.netlify.app/
+
 ---
 
 ## Tech Stack
