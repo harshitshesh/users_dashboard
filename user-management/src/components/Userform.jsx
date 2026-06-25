@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { X, UserPlus, Check } from 'lucide-react'
+import { X, UserPlus, Check, Pencil } from 'lucide-react'
 import gsap from 'gsap'
 
 const INITIAL_FORM = {

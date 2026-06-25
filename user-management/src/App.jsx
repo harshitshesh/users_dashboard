@@ -6,6 +6,7 @@ import Filterpopup from "./components/Filterpopup";
 import Userstable from "./components/Userstable";
 import Pagination from "./components/Pagination";
 import Userform from "./components/Userform";
+import DeletePopup from "./components/DeletePopup";
 import { Toaster, toast } from "react-hot-toast";
 import { UserPlus } from "lucide-react";
 import gsap from "gsap";
@@ -20,7 +21,6 @@ const ThreeBackground = () => {
     
     // Scene setup
     const scene = new THREE.Scene();
-    // Deep dark background for eye comfort
     scene.background = new THREE.Color('#0f172a'); 
     
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -41,7 +41,7 @@ const ThreeBackground = () => {
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     const material = new THREE.PointsMaterial({
       size: 0.006,
-      color: 0x38bdf8, // sky-400
+      color: 0x38bdf8,
       transparent: true,
       opacity: 0.6
     });
@@ -97,6 +97,7 @@ const App = () => {
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState(INITIAL_FILTERS);
@@ -129,7 +130,7 @@ const App = () => {
     );
   }, []);
 
-  // Toast Handling logic to accurately reflect success/error from useUsers
+  // Toast Handling logic
   useEffect(() => {
     if (!loading && pendingAction) {
       if (error) {
@@ -193,6 +194,12 @@ const App = () => {
     setEditUser(null);
   };
 
+  const handleConfirmDelete = async (id) => {
+    setUserToDelete(null);
+    setPendingAction('delete');
+    await handleDeleteuser(id);
+  }
+
   // Wrapper mutators mapping to pending actions
   const handleAddUserWrapper = async (formData) => {
     setPendingAction('add');
@@ -202,11 +209,6 @@ const App = () => {
   const handleUpdateUserWrapper = async (id, formData) => {
     setPendingAction('update');
     await handleUpdateuser(id, formData);
-  };
-
-  const handleDeleteUserWrapper = async (id) => {
-    setPendingAction('delete');
-    await handleDeleteuser(id);
   };
 
   const handleFormSubmit = async (formData) => {
@@ -228,21 +230,21 @@ const App = () => {
 
 
   return (
-    <div className="relative min-h-screen bg-slate-900 text-slate-200 overflow-hidden font-sans selection:bg-sky-500/30">
+    <div className="relative min-h-screen w-full bg-slate-900 text-slate-200 font-sans selection:bg-sky-500/30 flex flex-col">
       <ThreeBackground />
       <Toaster 
-        position="top-right" 
+        position="bottom-center" 
         toastOptions={{
-          className: 'shadow-2xl border border-slate-700/50 bg-slate-800 rounded-xl font-medium text-slate-200 text-sm backdrop-blur-md',
-          success: { iconTheme: { primary: '#38bdf8', secondary: '#0f172a' } },
-          error: { iconTheme: { primary: '#f87171', secondary: '#0f172a' } },
+          className: 'shadow-2xl border border-slate-700 bg-slate-900 rounded-full font-semibold text-slate-200 text-sm px-6 py-3 mb-4',
+          success: { iconTheme: { primary: '#10b981', secondary: '#0f172a' } },
+          error: { iconTheme: { primary: '#ef4444', secondary: '#0f172a' } },
         }} 
       />
       
       {/* Main Content Wrapper */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 flex flex-col">
         
-        <div ref={headerRef} className="mb-8">
+        <div ref={headerRef} className="shrink-0 mb-6">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             User Management <span className="text-sky-400">Dashboard</span>
           </h1>
@@ -251,10 +253,10 @@ const App = () => {
           </p>
         </div>
 
-        <Errormsg msg={error} onDismiss={()=>setError(null)}/>
+        {error && <Errormsg msg={error} onDismiss={()=>setError(null)}/>}
 
-        {/* relative z-50 fixes the popup going behind the table wrapper */}
-        <div ref={toolsRef} className="relative z-50 flex flex-col sm:flex-row gap-4 mb-6">
+        {/* Sticky Toolbar */}
+        <div ref={toolsRef} className="shrink-0 sticky top-0 z-50 flex flex-col sm:flex-row gap-4 mb-6 py-4 backdrop-blur-xl border-b border-slate-700/60" style={{background: 'rgba(15,23,42,0.92)'}}>
           <div className="flex-1">
             <Searchingbar onSearch={handleSearch} />
           </div>
@@ -266,7 +268,7 @@ const App = () => {
               onMouseEnter={onAddBtnEnter}
               onMouseLeave={onAddBtnLeave}
               onClick={()=> setIsFormOpen(true)}   
-              className="flex items-center gap-2 bg-sky-500 text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-400 transition-colors shadow-sm"
+              className="flex items-center gap-2 bg-sky-500 text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-400 transition-colors shadow-sm whitespace-nowrap"
             >
               <UserPlus size={18} />
               Add User
@@ -274,11 +276,20 @@ const App = () => {
           </div> 
         </div>
 
-        <div ref={tableRef} className="google-border-wrapper shadow-2xl shadow-sky-900/20">
-          {/* We set bg-slate-900 on the content wrapper to keep the dark mode inside the border */}
-          <div className="google-border-content !bg-slate-900 p-[1px]">
-             <Userstable users={paginatedUsers} loading={loading} onEdit={handleEdit} onDelete={handleDeleteUserWrapper} />
-             <div className="px-6 pb-4 bg-slate-900 rounded-b-[calc(1rem-3px)]">
+        {/* Table Area - Naturally grows, NO internal scrollbar */}
+        <div ref={tableRef} className="google-border-wrapper shadow-2xl shadow-sky-900/20 mb-8">
+          <div className="google-border-content !bg-slate-900 p-[1px] flex flex-col w-full">
+             
+             <div className="rounded-t-[calc(1rem-3px)]">
+               <Userstable 
+                 users={paginatedUsers} 
+                 loading={loading} 
+                 onEdit={handleEdit} 
+                 onDelete={(user) => setUserToDelete(user)} 
+               />
+             </div>
+
+             <div className="shrink-0 px-6 pb-4 bg-slate-900 rounded-b-[calc(1rem-3px)]">
                 <Pagination totalitems={totalItems} currentpage={currentPage} limit={limit} onPageChange={setCurrentPage} onLimitChange={(newlimit)=>{
                   setLimit(newlimit);
                   setCurrentPage(1)
@@ -291,6 +302,13 @@ const App = () => {
           <Userform editUser={editUser} onSubmit={handleFormSubmit} onClose={handleFormClose}/>
         )}   
 
+        {userToDelete && (
+          <DeletePopup 
+            user={userToDelete} 
+            onConfirm={handleConfirmDelete} 
+            onCancel={() => setUserToDelete(null)} 
+          />
+        )}
       </div>
     </div>
   )
